@@ -43,7 +43,7 @@ function extrapolate( currentWeight, targetWeight, mostRecentDateWithData, dateT
     var dt = mostRecentDateWithData;
     for(var weight = currentWeight; weight >= targetWeight && dt < dateToExtrapolateTo; weight += toLosePerWeek/7 ) {
         dt = new Date(dt.getTime() + MS_PER_DAY); 
-        d = Object()
+        var d = Object()
         d.Date = dt;
         d.Weight = weight;
         series.push(d);
@@ -91,7 +91,7 @@ function getRunningAverage( data, window ) {
         
     var runningAvg = arr.map(function(idx) {
         
-        var ithDate = new Date(firstDate).getTime() + parseInt(idx)*MS_PER_DAY;
+        var ithDate = firstDate.getTime() + parseInt(idx)*MS_PER_DAY;
         var weekOldDate = ithDate - window*MS_PER_DAY;
         
         var lastWeekData =   data.filter(function(d) {
@@ -107,8 +107,8 @@ function getRunningAverage( data, window ) {
         var prevTime = lastWeekData[0].Date.getTime();
         var prevWeight = lastWeekData[0].Weight;
         for( var i = 0; i < lastWeekData.length; i++ ) {
-            currTime = lastWeekData[i].Date.getTime();
-            currWeight = lastWeekData[i].Weight;
+            var currTime = lastWeekData[i].Date.getTime();
+            var currWeight = lastWeekData[i].Weight;
             sum += ( prevWeight + currWeight ) * ( currTime  - prevTime ) / 2;
             prevTime =  currTime;
             prevWeight = currWeight;
