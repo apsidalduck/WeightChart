@@ -31,7 +31,7 @@ $(function () {
 });
 
 function range(start, stop) {
-    return Array.apply(null, Array(stop)).map(function (_, i) { return i; }).filter( n => n >= start );
+    return Array.apply(null, Array(stop)).map(function (_, i) { return i; }).filter( function (n) { return n >= start; } );
 }
 
 function removeTime(dt) {
@@ -53,7 +53,7 @@ function extrapolate( currentWeight, targetWeight, mostRecentDateWithData, dateT
 
 function getSeries( data, windows ) {
 
-    var avgs = windows.map(n => getRunningAverage( data, n ));
+    var avgs = windows.map(function (n) { return getRunningAverage( data, n ); });
     
     var zones =  [  {
                         value: new Date().getTime(),
