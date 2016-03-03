@@ -4,6 +4,7 @@ $(function () {
     $.getScript('https://d3js.org/d3.v3.min.js', function () {
         var formatDate = d3.time.format("%Y-%m-%d %H:%M:%S");
         var windows = [7,14,28];
+        var colors = ['#8EBACE','#AED686','#F6CF20','#FA8A8A']
         function type(d) {
             d.Date = formatDate.parse(d.Date);
             d.Weight = +d.Weight;
@@ -24,8 +25,21 @@ $(function () {
             var extrapolated = extrapolate( currentWeight, targetWeight, mostRecentDateWithData, dateToExtrapolateTo, toLosePerWeek );
             Array.prototype.push.apply(fullData,extrapolated)
             
-            var series = getSeries( fullData.sort(function (a, b) { return b.Date.getTime() - a.Date.getTime(); } ), windows );
-            setChart('#weight', series);
+            var series = getSeries( fullData.sort(function (a, b) { return b.Date.getTime() - a.Date.getTime(); } ), windows, colors );
+            
+            var plotlines = [];
+            for( var i = 0; i < colors.length; i++) {
+                plotlines.push({
+                    color: colors[i],
+                    width: 1,
+                    value: new Date().getTime() - (((i==0)?0:windows[i-1])*MS_PER_DAY),
+                    label: {
+                        text: ((i==0)?'Today':(windows[i-1]).toString()+' Days ago'),
+                    },
+                    zIndex: 100
+                });
+            }
+            setChart('#weight', series, plotlines, dateToExtrapolateTo);
         });
     });
 });
@@ -51,7 +65,7 @@ function extrapolate( currentWeight, targetWeight, mostRecentDateWithData, dateT
     return series;
 }
 
-function getSeries( data, windows ) {
+function getSeries( data, windows, colors ) {
 
     var avgs = windows.map(function (n) { return getRunningAverage( data, n ); });
     
@@ -67,6 +81,7 @@ function getSeries( data, windows ) {
         type: 'line',
         name: 'Weight',
         zoneAxis: 'x',
+        color: colors[0],
         data: data.reverse().map(function (d) { return [d.Date.getTime(), +d.Weight] ; } ),
         zones: zones
     });
@@ -75,6 +90,7 @@ function getSeries( data, windows ) {
         var line = {
                 type: 'line',
                 name: windows[i].toString() + 'D Moving Average',
+                color: colors[i+1],
                 data: avgs[i],
                 zoneAxis: 'x',
                 zones: zones
@@ -118,7 +134,7 @@ function getRunningAverage( data, window ) {
     return runningAvg;
 }
 
-function setChart( target, series ) {
+function setChart( target, series, plotlines, dateToExtrapolateTo) {
     $(target).highcharts({
         chart: {
             zoomType: 'x'
@@ -133,10 +149,16 @@ function setChart( target, series ) {
         },
         xAxis: {
             type: 'datetime',
-            plotLines: [{
-                color: '#FF0000', // Red
-                width: 1,
-                value: new Date().getTime()
+            plotLines: plotlines,
+            plotBands: [{
+                from: new Date().getTime(),
+                to: dateToExtrapolateTo,
+                color: '#FAFAFA',
+                label: { 
+                    text: 'Target for next month', // Content of the label. 
+                    align: 'left', // Positioning of the label.  
+                    x: +50
+                }
             }]
         },
         yAxis: {
