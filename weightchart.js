@@ -31,7 +31,7 @@ $(function () {
             for( var i = 0; i < colors.length; i++) {
                 plotlines.push({
                     color: colors[i],
-                    width: 1,
+                    width: 2,
                     value: new Date().getTime() - (((i==0)?0:windows[i-1])*MS_PER_DAY),
                     label: {
                         text: ((i==0)?'Today':(windows[i-1]).toString()+' Days ago'),
