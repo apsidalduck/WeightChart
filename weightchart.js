@@ -155,8 +155,8 @@ function setChart( target, series, plotlines, dateToExtrapolateTo) {
                 to: dateToExtrapolateTo,
                 color: '#FAFAFA',
                 label: { 
-                    text: 'Target for next month', // Content of the label. 
-                    align: 'left', // Positioning of the label.  
+                    text: 'Target for next month',
+                    align: 'left',
                     x: +50
                 }
             }]
